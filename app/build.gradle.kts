@@ -48,9 +48,21 @@ android {
         }
     }
 }
+var roomVersion = "2.5.2";
 
 dependencies {
 
+//    Rede
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("com.google.code.gson:gson:2.8.9")
+
+    //Armazenamento
+//    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation ("androidx.navigation:navigation-compose:2.7.7")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation ("com.google.android.material:material:1.11.0")

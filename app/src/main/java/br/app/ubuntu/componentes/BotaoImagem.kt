@@ -25,7 +25,7 @@ import br.app.ubuntu.R
 
 @Composable
 fun BotaoImagem(nome: MutableState<String>, icone: Painter?) {
-    val logo: Painter = painterResource(id = R.drawable.logoubuntucircular50x50)
+    val logo: Painter = painterResource(id = R.drawable.logo_ubuntu_circular)
     if (icone != null) {
         Button(
             shape = ShapeDefaults.Large,

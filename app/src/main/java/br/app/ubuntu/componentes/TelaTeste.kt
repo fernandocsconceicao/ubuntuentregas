@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -31,10 +31,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.app.ubuntu.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun Inicio(controlador: NavHostController, nome: MutableState<String>) {
+fun TelaTeste(controlador: NavHostController, nome: MutableState<String>) {
     val logo: Painter = painterResource(id = R.drawable.logoubuntucircular50x50)
     Column(modifier = Modifier.fillMaxSize()) {
         Row(horizontalArrangement = Arrangement.Center) {
@@ -46,14 +45,12 @@ fun Inicio(controlador: NavHostController, nome: MutableState<String>) {
                     painter = logo,
                     contentDescription = "notificações"
                 )
-
             }
             Spacer(modifier = Modifier.width(10.dp))
             Row {
                 Botao(nome = mutableStateOf("Ajuda"), logo)
             }
         }
-
 
         Column(
             modifier = Modifier
@@ -124,15 +121,18 @@ fun Inicio(controlador: NavHostController, nome: MutableState<String>) {
                 )
 
             }
-            Column( modifier = Modifier.background(
-                Color(0x4D4EBC52),
-                shape = RoundedCornerShape(16.dp)
-            ).padding(20.dp,10.dp)
+            Spacer(modifier = Modifier.height(30.dp))
+            Column( modifier = Modifier
+                .background(
+                    Color.DarkGray,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(20.dp, 10.dp)
             ) {
                 Row {
                     Column {
                         Row (horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-                            Text(text = "Visa")
+                            Text(text = "Visa", color = Color.White)
 
                             Image(
                                 modifier = Modifier.padding(5.dp),
@@ -140,29 +140,27 @@ fun Inicio(controlador: NavHostController, nome: MutableState<String>) {
                                 contentDescription = "moedas"
                             )
                         }
-                        TextoBotao(nome = mutableStateOf("Ir para meu cartao"), icone = logo )
+                        BotaoDeTexto(nome = mutableStateOf("Ir para meu cartao"), icone = logo )
 
                     }
                     Row {
-                        Column {
+                        Column (horizontalAlignment = Alignment.CenterHorizontally){
                             Image(painter = painterResource(id = R.drawable.logoubuntucircular50x50),
                                 contentDescription =" cartão" )
-                            Text(text = "Cartão virtual")
+                            Text(text = "Cartão virtual",Modifier.wrapContentSize(), color = Color.White)
                         }
-                        Column {
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Image(painter = painterResource(id = R.drawable.logoubuntucircular50x50),
                                 contentDescription =" wireless" )
-                            Text(text = "Cartão aproxime e pague")
+                            Text(text = "Cartão aproxime e pague", fontSize = 12.sp, modifier = Modifier.wrapContentWidth(), color = Color.White)
                         }
                     }
                 }
-                TextoBotao(nome = mutableStateOf("Peça seu cartão de crédito grátis"),
+                BotaoDeTexto(nome = mutableStateOf("Peça seu cartão de crédito grátis"),
                     icone = null )
             }
-
-
         }
-
     }
     // Conteúdo da tela Home
 }
