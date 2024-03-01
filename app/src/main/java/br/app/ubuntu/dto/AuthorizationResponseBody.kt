@@ -6,7 +6,8 @@ data class AuthorizationResponseBody(
     val accountType: String,
     val estabelecimentoId:Long,
     val primeiroAcesso:Boolean,
-    val emailConfirmado:Boolean
+    val emailConfirmado:Boolean,
+    val idEntregador: Long
 ) {
 
 }

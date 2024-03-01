@@ -2,6 +2,7 @@ package br.app.ubuntu.client
 
 import br.app.ubuntu.dto.AuthorizationRequestBody
 import br.app.ubuntu.dto.AuthorizationResponseBody
+import br.app.ubuntu.dto.ResTelaMinhaArea
 import br.app.ubuntu.dto.ResTelaViagens
 import br.com.ubuntu.dto.*
 import retrofit2.Response

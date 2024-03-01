@@ -1,4 +1,4 @@
-package br.com.ubuntu.dto
+package br.app.ubuntu.dto
 
 data class ResTelaMinhaArea(
     val nome: String,
@@ -6,5 +6,6 @@ data class ResTelaMinhaArea(
     val lblViagens: String,
     val viagens: Int,
     val lblAvaliacao: String,
-    val avaliacao: Float
+    val avaliacao: Float,
+    val status: String
 )

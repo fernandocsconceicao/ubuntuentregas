@@ -6,5 +6,5 @@ interface IServicoDePerfil {
 
     fun encerrarSessao()
 
-    fun definirTokenProd(token: String, tipoConta: String)
+    fun definirTokenProd(token: String, tipoConta: String, idEntregador:String)
 }
