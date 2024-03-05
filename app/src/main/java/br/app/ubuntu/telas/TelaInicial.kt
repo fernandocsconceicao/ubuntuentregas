@@ -1,7 +1,6 @@
 package br.app.ubuntu.telas
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,11 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,29 +33,33 @@ import br.app.ubuntu.dto.Mensagem
 import br.app.ubuntu.dto.ResTelaMinhaArea
 import br.app.ubuntu.enums.TipoMensagem
 import com.google.gson.Gson
-import kotlinx.coroutines.runBlocking
 import okhttp3.WebSocket
 import retrofit2.Response
+
+
+var conexaoWebSocket: WebSocket? = null
+var status = mutableStateOf("bla")
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
     val context = LocalContext.current
-    var resposta: Response<ResTelaMinhaArea>?
-    var status by remember { mutableStateOf("bla") }
-    val myWebSocketClient = MyWebSocketClient()
-    var conexaoWebSocket: WebSocket? = null
+    var resposta: Response<ResTelaMinhaArea>? = null
+
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
+    LaunchedEffect(context) {
+        // Lógica a ser executada apenas uma vez
 
-    Log.d("DEBUG", Gson().toJson(perfil))
 
-    runBlocking {
         resposta =
             UbuntuClientImplementation.api.obterTelaMinhaArea(
                 perfil.token!!
             )
-        status = resposta!!.body()!!.status
+        status.value = resposta!!.body()!!.status
+
+
     }
+
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -68,7 +69,7 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                 .padding(8.dp, 8.dp), horizontalArrangement = Arrangement.End
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = status, fontSize = 15.sp)
+                Text(text = status.value, fontSize = 15.sp)
                 Spacer(modifier = Modifier.width(10.dp))
                 Image(
                     painter = painterResource(id = R.drawable.ellipse100x100),
@@ -92,7 +93,7 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                     contentDescription = "Imagem de Perfil",
                     modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 16.dp)
                 )
-                Text(text = resposta!!.body()!!.nome)
+                resposta?.body()?.nome?.let { Text(text = it) }
             }
 
         }
@@ -111,11 +112,11 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                 .padding(0.dp, 8.dp)
         ) {
             Button(onClick = {
-                conexaoWebSocket = myWebSocketClient
-                    .connectWebSocket(
-                        perfil
-                    )
-
+                conexaoWebSocket =
+                    MyWebSocketClient
+                        .connectWebSocket(
+                            perfil
+                        )
                 val mensagem = Mensagem(
                     TipoMensagem.INICIAR_TRABALHO,
                     perfil.idEntregador!!.toLong(),
@@ -131,7 +132,9 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                 conexaoWebSocket?.send(
                     mensagemEmJson
                 )
-                status = "Trabalhando"
+                println(status)
+                status.value = "Trabalhando"
+                println(status)
 
             }) {
                 Text(text = "Iniciar")
@@ -150,6 +153,7 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                         )
                     )
                 )
+
             }
             ) {
                 Text(text = "Encerrar")

@@ -8,11 +8,10 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
-class WsListener(val perfil: Perfil) : WebSocketListener() {
+class WsListener : WebSocketListener() {
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
-        webSocket.send("hellomai frendi")
         println("conexao aberta")
     }
 
@@ -29,6 +28,5 @@ class WsListener(val perfil: Perfil) : WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         super.onMessage(webSocket, text)
-        println(text)
     }
 }

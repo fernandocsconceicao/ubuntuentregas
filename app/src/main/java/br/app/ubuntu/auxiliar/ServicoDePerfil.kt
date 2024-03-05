@@ -33,7 +33,7 @@ class ServicoDePerfil(context: Context) : IServicoDePerfil {
             val id_entregador = cursor.getString(cursor.getColumnIndexOrThrow("id_entregador"))
             if (perfil == "prod"){
                 retorno = Perfil(id, token, perfil, invalido, tipoConta, id_entregador)
-                Log.d("DEBUG", retorno.idEntregador.toString())
+
             }
 
         }
