@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import br.app.ubuntu.R
 import br.app.ubuntu.auxiliar.Perfil
@@ -31,31 +32,30 @@ import br.app.ubuntu.client.MyWebSocketClient
 import br.app.ubuntu.client.impl.UbuntuClientImplementation
 import br.app.ubuntu.dto.Mensagem
 import br.app.ubuntu.dto.ResTelaMinhaArea
+import br.app.ubuntu.enums.Remetente
 import br.app.ubuntu.enums.TipoMensagem
 import com.google.gson.Gson
 import okhttp3.WebSocket
 import retrofit2.Response
 
 
-var conexaoWebSocket: WebSocket? = null
-var status = mutableStateOf("bla")
+    var conexaoWebSocket: WebSocket? = null
+    var status = mutableStateOf("bla")
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
+    val vm = viewModel<TelaInicialViewModel>()
     val context = LocalContext.current
     var resposta: Response<ResTelaMinhaArea>? = null
 
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
     LaunchedEffect(context) {
-        // Lógica a ser executada apenas uma vez
-
-
         resposta =
             UbuntuClientImplementation.api.obterTelaMinhaArea(
                 perfil.token!!
             )
-        status.value = resposta!!.body()!!.status
+        vm.status = resposta!!.body()!!.status
 
 
     }
@@ -69,7 +69,7 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                 .padding(8.dp, 8.dp), horizontalArrangement = Arrangement.End
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = status.value, fontSize = 15.sp)
+                Text(text = vm.status, fontSize = 15.sp)
                 Spacer(modifier = Modifier.width(10.dp))
                 Image(
                     painter = painterResource(id = R.drawable.ellipse100x100),
@@ -124,7 +124,9 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                     null,
                     null,
                     null,
-                    null
+                    null,
+                    null,
+                    Remetente.APP
                 )
 
                 val mensagemEmJson: String = Gson().toJson(mensagem)
@@ -133,7 +135,7 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                     mensagemEmJson
                 )
                 println(status)
-                status.value = "Trabalhando"
+                vm.status = "Trabalhando"
                 println(status)
 
             }) {
@@ -149,7 +151,9 @@ fun TelaInicial(controlador: NavHostController, nome: MutableState<String>) {
                             null,
                             null,
                             null,
-                            null
+                            null,
+                            null,
+                            Remetente.APP
                         )
                     )
                 )

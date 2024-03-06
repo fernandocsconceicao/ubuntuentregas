@@ -1,8 +1,10 @@
 package br.app.ubuntu.client
 
-import br.app.ubuntu.auxiliar.Perfil
+import android.util.Log
 import br.app.ubuntu.dto.Mensagem
+import br.app.ubuntu.enums.Remetente
 import br.app.ubuntu.enums.TipoMensagem
+import br.app.ubuntu.telas.TelaInicialViewModel
 import com.google.gson.Gson
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -10,6 +12,7 @@ import okhttp3.WebSocketListener
 
 class WsListener : WebSocketListener() {
 
+    private val viewModel: TelaInicialViewModel = TelaInicialViewModel
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
         println("conexao aberta")
@@ -28,5 +31,17 @@ class WsListener : WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         super.onMessage(webSocket, text)
+        try {
+            val mensagem: Mensagem = Gson()
+                .fromJson(text, Mensagem::class.java)
+            if (
+                mensagem.tipoMensagem == TipoMensagem.FINALIZAR_TRABALHO &&
+                mensagem.remetente == Remetente.BACKEND
+            )
+                viewModel.status = (mensagem.status.toString())
+
+        } catch (e: Exception) {
+            Log.e("ERROR", "Mensagem inválida recebida : $text || ${e.message}")
+        }
     }
 }
