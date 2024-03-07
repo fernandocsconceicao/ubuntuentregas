@@ -37,8 +37,11 @@ class WsListener : WebSocketListener() {
             if (
                 mensagem.tipoMensagem == TipoMensagem.FINALIZAR_TRABALHO &&
                 mensagem.remetente == Remetente.BACKEND
-            )
+            ){
                 viewModel.status = (mensagem.status.toString())
+            }else if(mensagem.tipoMensagem== TipoMensagem.CORRIDA){
+                println(mensagem)
+            }
 
         } catch (e: Exception) {
             Log.e("ERROR", "Mensagem inválida recebida : $text || ${e.message}")
