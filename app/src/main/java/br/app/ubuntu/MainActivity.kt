@@ -8,8 +8,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.app.ubuntu.enums.Rotas
+import br.app.ubuntu.telas.TelaAcionamentoParaCorrida
+import br.app.ubuntu.telas.TelaAguardeDeCorrida
 import br.app.ubuntu.telas.TelaInicial
 import br.app.ubuntu.telas.TelaDeLogin
+import br.app.ubuntu.telas.TelaEmCorrida
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +21,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             val controladorDeNavegacao = rememberNavController()
             NavHost(navController = controladorDeNavegacao, startDestination = Rotas.TELA_LOGIN.rota) {
+
                 composable(Rotas.TELA_LOGIN.rota) { TelaDeLogin(controladorDeNavegacao) }
-                composable(Rotas.TELA_INICIAL.rota) { TelaInicial(controladorDeNavegacao,nome) }
+                composable(Rotas.TELA_INICIAL.rota) { TelaInicial(controladorDeNavegacao) }
+                composable(Rotas.TELA_AGUARDE_DE_CORRIDA.rota) { TelaAguardeDeCorrida(controladorDeNavegacao) }
+                composable(Rotas.TELA_ACIONAMENTO_PARA_CORRIDA.rota) { TelaAcionamentoParaCorrida(controladorDeNavegacao) }
+                composable(Rotas.TELA_EM_CORRIDA.rota) { TelaEmCorrida(controladorDeNavegacao) }
+
             }
         }
     }

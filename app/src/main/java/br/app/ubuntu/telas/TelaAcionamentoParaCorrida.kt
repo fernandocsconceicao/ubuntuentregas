@@ -27,19 +27,27 @@ import androidx.navigation.NavHostController
 import br.app.ubuntu.R
 import br.app.ubuntu.auxiliar.Perfil
 import br.app.ubuntu.auxiliar.ServicoDePerfil
+import br.app.ubuntu.client.MyWebSocketClient
+import br.app.ubuntu.dto.Mensagem
+import br.app.ubuntu.enums.Remetente
+import br.app.ubuntu.enums.TipoMensagem
 import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
+import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
+import okhttp3.WebSocket
+
+
+
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun TelaInicial(controladorDeNavegacao: NavHostController) {
+fun TelaAcionamentoParaCorrida(controladorDeNavegacao: NavHostController) {
     val vm = viewModel<TelaInicialViewModel>()
     val context = LocalContext.current
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
 
     LaunchedEffect(context) {
-        vm.perfil = perfil
-        vm.atualizarTela(perfil, controladorDeNavegacao = controladorDeNavegacao)
-
+       vm.atualizarTela(perfil)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -52,7 +60,7 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
                 Text(text = vm.status, fontSize = 15.sp)
                 Spacer(modifier = Modifier.width(10.dp))
                 Image(
-                    painter = painterResource(id = vm.iconeStatus),
+                    painter = painterResource(id =vm.iconeStatus),
                     contentDescription = "Status"
                 )
             }
@@ -73,18 +81,13 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
                     contentDescription = "Imagem de Perfil",
                     modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 16.dp)
                 )
-                vm.nome?.let { Text(text = it) }
+                vm.nome?.let {  Text(text =it ) }
             }
             vm.corrida?.let {
 
             }
 
         }
-        Spacer(
-            modifier = Modifier
-                .height(0.dp)
-                .weight(1f)
-        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom,
@@ -94,12 +97,29 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
                 .height(290.dp)
                 .padding(0.dp, 8.dp)
         ) {
-            Button(onClick = {
-                vm.iniciarTrabalho(controladorDeNavegacao)
-            }) {
-                Text(text = "Iniciar")
+            Image(painter = painterResource(id = R.drawable.logoubuntucircular50x50),
+                contentDescription = "Logo do Estabelecimento" )
+            Row {
+                Button(onClick = {
+                   runBlocking {
+                       vm.responderCorrida(false,perfil)
+                   }
+                }) {
+                    Text(text = "Rejeitar")
+                }
+                Button(onClick = {
+                   runBlocking {
+                       vm.responderCorrida(true,perfil)
+                   }
+                }) {
+                    Text(text = "Aceitar")
+                }
             }
-
         }
+        Spacer(
+            modifier = Modifier
+                .height(0.dp)
+                .weight(1f)
+        )
     }
 }

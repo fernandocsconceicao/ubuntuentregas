@@ -4,7 +4,7 @@ import android.util.Log
 import br.app.ubuntu.dto.Mensagem
 import br.app.ubuntu.enums.Remetente
 import br.app.ubuntu.enums.TipoMensagem
-import br.app.ubuntu.telas.TelaInicialViewModel
+import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
 import com.google.gson.Gson
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -37,10 +37,11 @@ class WsListener : WebSocketListener() {
             if (
                 mensagem.tipoMensagem == TipoMensagem.FINALIZAR_TRABALHO &&
                 mensagem.remetente == Remetente.BACKEND
-            ){
+            ) {
+
                 viewModel.status = (mensagem.status.toString())
-            }else if(mensagem.tipoMensagem== TipoMensagem.CORRIDA){
-                println(mensagem)
+            } else if (mensagem.tipoMensagem == TipoMensagem.CORRIDA) {
+                viewModel.corridaOferecida(mensagem)
             }
 
         } catch (e: Exception) {

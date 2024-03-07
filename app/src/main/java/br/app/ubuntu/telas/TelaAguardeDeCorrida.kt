@@ -2,6 +2,7 @@ package br.app.ubuntu.telas
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,11 +16,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,19 +29,23 @@ import androidx.navigation.NavHostController
 import br.app.ubuntu.R
 import br.app.ubuntu.auxiliar.Perfil
 import br.app.ubuntu.auxiliar.ServicoDePerfil
+import br.app.ubuntu.client.MyWebSocketClient
+import br.app.ubuntu.dto.Mensagem
+import br.app.ubuntu.enums.Remetente
+import br.app.ubuntu.enums.TipoMensagem
 import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
+import com.google.gson.Gson
+
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun TelaInicial(controladorDeNavegacao: NavHostController) {
+fun TelaAguardeDeCorrida(controladorDeNavegacao: NavHostController) {
     val vm = viewModel<TelaInicialViewModel>()
     val context = LocalContext.current
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
 
     LaunchedEffect(context) {
-        vm.perfil = perfil
-        vm.atualizarTela(perfil, controladorDeNavegacao = controladorDeNavegacao)
-
+       vm.atualizarTela(perfil)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -52,7 +58,7 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
                 Text(text = vm.status, fontSize = 15.sp)
                 Spacer(modifier = Modifier.width(10.dp))
                 Image(
-                    painter = painterResource(id = vm.iconeStatus),
+                    painter = painterResource(id =vm.iconeStatus),
                     contentDescription = "Status"
                 )
             }
@@ -73,33 +79,28 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
                     contentDescription = "Imagem de Perfil",
                     modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 16.dp)
                 )
-                vm.nome?.let { Text(text = it) }
+                vm.nome?.let {  Text(text =it ) }
             }
             vm.corrida?.let {
 
             }
 
         }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(290.dp)
+                .padding(50.dp, 8.dp)
+        ) {
+            Text(text = vm.mensagemAguardeDeDeCorrida , textAlign = TextAlign.Center)
+        }
         Spacer(
             modifier = Modifier
                 .height(0.dp)
                 .weight(1f)
         )
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom,
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(290.dp)
-                .padding(0.dp, 8.dp)
-        ) {
-            Button(onClick = {
-                vm.iniciarTrabalho(controladorDeNavegacao)
-            }) {
-                Text(text = "Iniciar")
-            }
-
-        }
     }
 }
