@@ -44,9 +44,6 @@ fun TelaAguardeDeCorrida(controladorDeNavegacao: NavHostController) {
     val context = LocalContext.current
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
 
-    LaunchedEffect(context) {
-       vm.atualizarTela(perfil)
-    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -81,9 +78,7 @@ fun TelaAguardeDeCorrida(controladorDeNavegacao: NavHostController) {
                 )
                 vm.nome?.let {  Text(text =it ) }
             }
-            vm.corrida?.let {
 
-            }
 
         }
         Column(

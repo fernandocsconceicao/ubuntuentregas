@@ -1,9 +1,11 @@
 package br.app.ubuntu.telas.viewmodel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import br.app.ubuntu.R
@@ -19,30 +21,42 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.WebSocket
 import retrofit2.Response
 
 
 object TelaInicialViewModel : ViewModel() {
+
+    var bitmapLogoEstabelecimento: ImageBitmap? = null
+    var imagemLogoEstabelecimento: ByteArray? = null
+    var enderecoClienteFinal: String? = null
+    var enderecoEstabelecimento: String? = null
     val mensagemAguardeDeDeCorrida: String =
         "Aguardando corrida. Esteja em alerta, para receber uma notificação."
-    val corrida: Unit? = null
-    var nome: String? = "null"
+    var nome: String? = null
     var iconeStatus: Int = R.drawable.ellipse100x100
-    var websocket: WebSocket? = null
     var resposta: Response<ResTelaMinhaArea>? = null
     var status by mutableStateOf("Online")
     var conexaoWebSocket: WebSocket? = null
     var perfil: Perfil? = null
+    var idPedidoAcionado: Long? = null;
+    var gson = Gson()
 
     @SuppressLint("StaticFieldLeak")
     var controlador: NavHostController? = null
 
 
     fun corridaOferecida(mensagem: Mensagem) {
+        Log.d("DES", "Começo corridaOferecida" )
+        idPedidoAcionado = mensagem.idPedidoAcionado
+        enderecoEstabelecimento = mensagem.enderecoEstabelecimento
+        enderecoClienteFinal = mensagem.enderecoClienteFinal
         CoroutineScope(Dispatchers.Main).launch {
             controlador?.navigate(Rotas.TELA_ACIONAMENTO_PARA_CORRIDA.rota)
         }
+        Log.d("DES", "Começo corridaOferecida")
+
     }
 
     fun finalizarTrabalho() {
@@ -58,34 +72,63 @@ object TelaInicialViewModel : ViewModel() {
                     null,
                     null,
                     null,
-                    Remetente.APP
+                    Remetente.APP,
+                    null,
+                    null
                 )
             )
         )
 
     }
 
-    suspend fun atualizarTela(perfil: Perfil, controladorDeNavegacao: NavHostController? =  null) {
+    suspend fun atualizarTela(perfil: Perfil, controladorDeNavegacao: NavHostController? = null) {
+        Log.d("DES", " I -Atualizando tela")
         resposta =
             UbuntuClientImplementation.api.obterTelaMinhaArea(
                 perfil.token!!
             )
-        status = resposta!!.body()!!.status
-        nome = resposta?.body()?.nome
+
+        status = resposta!!
+            .body()!!
+            .status
+        nome = resposta!!.body()!!.nome
         if (controladorDeNavegacao != null) {
             controlador = controladorDeNavegacao
         }
+        Log.d("DES", "F -Atualizando tela status = $status ")
 
     }
 
-    suspend fun responderCorrida(corridaAceita: Boolean, perfil: Perfil) {
-        resposta =
-            UbuntuClientImplementation.api.obterTelaMinhaArea(
-                perfil.token!!
+    fun responderCorrida(corridaAceita: Boolean, perfil: Perfil) {
+        Log.d("DES", " I -ResponderCorrida $corridaAceita")
+
+        conexaoWebSocket?.send(
+            Gson().toJson(
+                Mensagem(
+                    TipoMensagem.RESPOSTA_CORRIDA,
+                    perfil.idEntregador!!.toLong(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    Remetente.APP,
+                    corridaAceita,
+                    idPedidoAcionado
+                )
             )
-        status = resposta!!.body()!!.status
-
-
+        )
+        if (corridaAceita) {
+            CoroutineScope(Dispatchers.Main).launch {
+                controlador?.navigate(Rotas.TELA_EM_CORRIDA.rota)
+            }
+        } else {
+            CoroutineScope(Dispatchers.Main).launch {
+                controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
+            }
+        }
+        Log.d("DES", " F -ResponderCorrida $corridaAceita")
     }
 
     fun iniciarTrabalho(controladorDeNavegacao: NavHostController) {
@@ -103,7 +146,9 @@ object TelaInicialViewModel : ViewModel() {
             null,
             null,
             null,
-            Remetente.APP
+            Remetente.APP,
+            null,
+            null
         )
 
         val mensagemEmJson: String = Gson().toJson(mensagem)
@@ -113,5 +158,28 @@ object TelaInicialViewModel : ViewModel() {
         )
         controladorDeNavegacao.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
         status = "Trabalhando"
+    }
+
+    fun finalizarCorrida() {
+        val mensagem = Mensagem(
+            TipoMensagem.FINALIZAR_CORRIDA,
+            perfil?.idEntregador!!.toLong(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            Remetente.APP,
+            null,
+            null
+        )
+
+        val mensagemEmJson: String = Gson().toJson(mensagem)
+        conexaoWebSocket?.send(mensagemEmJson)
+        controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
+        runBlocking {
+            atualizarTela(perfil!!, controlador)
+        }
     }
 }

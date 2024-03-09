@@ -83,9 +83,7 @@ fun TelaAcionamentoParaCorrida(controladorDeNavegacao: NavHostController) {
                 )
                 vm.nome?.let {  Text(text =it ) }
             }
-            vm.corrida?.let {
 
-            }
 
         }
         Column(
@@ -104,6 +102,7 @@ fun TelaAcionamentoParaCorrida(controladorDeNavegacao: NavHostController) {
                    runBlocking {
                        vm.responderCorrida(false,perfil)
                    }
+
                 }) {
                     Text(text = "Rejeitar")
                 }

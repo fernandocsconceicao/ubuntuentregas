@@ -14,5 +14,7 @@ data class Mensagem(
     val bairroClienteFinal: String?,
     val status: String?,
     val remetente: Remetente,
+    val resposta:Boolean?,
+    val idPedidoAcionado: Long?
 
 )

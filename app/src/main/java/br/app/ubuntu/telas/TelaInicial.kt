@@ -75,9 +75,7 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
                 )
                 vm.nome?.let { Text(text = it) }
             }
-            vm.corrida?.let {
 
-            }
 
         }
         Spacer(
