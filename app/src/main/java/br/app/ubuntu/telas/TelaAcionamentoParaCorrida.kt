@@ -101,6 +101,7 @@ fun TelaAcionamentoParaCorrida(controladorDeNavegacao: NavHostController) {
                 Button(onClick = {
                    runBlocking {
                        vm.responderCorrida(false,perfil)
+                       vm.atualizarTela(perfil)
                    }
 
                 }) {

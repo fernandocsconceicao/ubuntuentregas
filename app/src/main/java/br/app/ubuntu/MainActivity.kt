@@ -1,5 +1,7 @@
 package br.app.ubuntu
 
+import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +17,9 @@ import br.app.ubuntu.telas.TelaDeLogin
 import br.app.ubuntu.telas.TelaEmCorrida
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val nome = mutableStateOf("Nome")

@@ -95,7 +95,7 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
             Button(onClick = {
                 vm.iniciarTrabalho(controladorDeNavegacao)
             }) {
-                Text(text = "Iniciar")
+                Text(text = "Iniciar trabalho")
             }
 
         }

@@ -40,9 +40,7 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
     val context = LocalContext.current
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
 
-    LaunchedEffect(context) {
-        vm.atualizarTela(perfil)
-    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(

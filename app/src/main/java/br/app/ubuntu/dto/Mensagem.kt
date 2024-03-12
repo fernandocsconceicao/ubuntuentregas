@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 data class Mensagem(
     val tipoMensagem: TipoMensagem,
-    val idEntregador: Long,
+    val idEntregador: String,
     val valorCorrida: BigDecimal?,
     val enderecoEstabelecimento: String?,
     val bairroEstabelecimento: String?,

@@ -87,15 +87,20 @@ fun TelaAguardeDeCorrida(controladorDeNavegacao: NavHostController) {
 
             modifier = Modifier
                 .fillMaxWidth()
-                .height(290.dp)
+                .weight(1f)
                 .padding(50.dp, 8.dp)
         ) {
             Text(text = vm.mensagemAguardeDeDeCorrida , textAlign = TextAlign.Center)
+            Spacer(
+                modifier = Modifier
+                    .height(0.dp)
+                    .weight(1f)
+            )
+            Button(onClick = {
+                vm.finalizarTrabalho()
+            }) {
+                Text(text = "Finalizar trabalho")
+            }
         }
-        Spacer(
-            modifier = Modifier
-                .height(0.dp)
-                .weight(1f)
-        )
     }
 }

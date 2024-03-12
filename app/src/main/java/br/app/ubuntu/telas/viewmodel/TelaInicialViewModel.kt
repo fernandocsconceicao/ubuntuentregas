@@ -58,14 +58,24 @@ object TelaInicialViewModel : ViewModel() {
         Log.d("DES", "Começo corridaOferecida")
 
     }
+    fun desconectado(){
+        Log.d("DES", "Desconectado")
+        notificarUsuario()
+        CoroutineScope(Dispatchers.Main).launch {
+            controlador!!.navigate(Rotas.TELA_INICIAL.rota)
+        }
+    }
+
+    private fun notificarUsuario() {
+
+    }
 
     fun finalizarTrabalho() {
-
         conexaoWebSocket!!.send(
             Gson().toJson(
                 Mensagem(
                     TipoMensagem.FINALIZAR_TRABALHO,
-                    1L,
+                    perfil?.idEntregador!!,
                     null,
                     null,
                     null,
@@ -78,7 +88,10 @@ object TelaInicialViewModel : ViewModel() {
                 )
             )
         )
-
+        controlador?.navigate(Rotas.TELA_INICIAL.rota)
+        runBlocking {
+            atualizarTela(perfil!!, controlador)
+        }
     }
 
     suspend fun atualizarTela(perfil: Perfil, controladorDeNavegacao: NavHostController? = null) {
@@ -106,7 +119,7 @@ object TelaInicialViewModel : ViewModel() {
             Gson().toJson(
                 Mensagem(
                     TipoMensagem.RESPOSTA_CORRIDA,
-                    perfil.idEntregador!!.toLong(),
+                    perfil.idEntregador!!,
                     null,
                     null,
                     null,
@@ -139,7 +152,7 @@ object TelaInicialViewModel : ViewModel() {
                 )
         val mensagem = Mensagem(
             TipoMensagem.INICIAR_TRABALHO,
-            perfil?.idEntregador!!.toLong(),
+            perfil?.idEntregador!!,
             null,
             null,
             null,
@@ -150,7 +163,7 @@ object TelaInicialViewModel : ViewModel() {
             null,
             null
         )
-
+        pingpong()
         val mensagemEmJson: String = Gson().toJson(mensagem)
 
         conexaoWebSocket?.send(
@@ -163,7 +176,7 @@ object TelaInicialViewModel : ViewModel() {
     fun finalizarCorrida() {
         val mensagem = Mensagem(
             TipoMensagem.FINALIZAR_CORRIDA,
-            perfil?.idEntregador!!.toLong(),
+            perfil?.idEntregador!!,
             null,
             null,
             null,
@@ -178,8 +191,25 @@ object TelaInicialViewModel : ViewModel() {
         val mensagemEmJson: String = Gson().toJson(mensagem)
         conexaoWebSocket?.send(mensagemEmJson)
         controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
-        runBlocking {
-            atualizarTela(perfil!!, controlador)
-        }
+    }
+
+    fun pingpong() {
+        val mensagem = Mensagem(
+            TipoMensagem.PINGPONG,
+            perfil?.idEntregador.toString(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            Remetente.APP,
+            null,
+            null
+        )
+        val mensagemEmJson: String = Gson().toJson(mensagem)
+        println("ping $mensagemEmJson")
+        conexaoWebSocket?.send(mensagemEmJson)
+
     }
 }

@@ -42,6 +42,10 @@ class WsListener : WebSocketListener() {
                 viewModel.status = (mensagem.status.toString())
             } else if (mensagem.tipoMensagem == TipoMensagem.CORRIDA) {
                 viewModel.corridaOferecida(mensagem)
+            }else if (mensagem.tipoMensagem == TipoMensagem.DESCONEXAO) {
+                viewModel.desconectado()
+            }else if (mensagem.tipoMensagem == TipoMensagem.PINGPONG) {
+                viewModel.pingpong()
             }
 
         } catch (e: Exception) {
