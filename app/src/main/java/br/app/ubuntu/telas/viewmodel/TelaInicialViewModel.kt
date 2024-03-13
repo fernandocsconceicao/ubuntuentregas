@@ -28,6 +28,7 @@ import retrofit2.Response
 
 object TelaInicialViewModel : ViewModel() {
 
+    var confirmacaoFinalizacaoCorrida: Boolean = false
     var forcarMudancaStatus: Boolean? = null
     var telaViagemRecuperada = false
     var bitmapLogoEstabelecimento: ImageBitmap? = null
@@ -238,5 +239,9 @@ object TelaInicialViewModel : ViewModel() {
             nomeEstabelecimento = obterTelaViagem!!.nomeEstabelecimento
             enderecoEstabelecimento = obterTelaViagem.enderecoEstabelecimento
         }
+    }
+    fun confirmacaoEncerramentoDaViagem(){
+        confirmacaoFinalizacaoCorrida = true
+        println(confirmacaoFinalizacaoCorrida)
     }
 }
