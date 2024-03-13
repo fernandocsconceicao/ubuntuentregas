@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val nome = mutableStateOf("Nome")
+
         setContent {
             val controladorDeNavegacao = rememberNavController()
             NavHost(navController = controladorDeNavegacao, startDestination = Rotas.TELA_LOGIN.rota) {

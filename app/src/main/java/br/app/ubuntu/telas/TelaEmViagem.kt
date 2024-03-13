@@ -3,10 +3,7 @@ package br.app.ubuntu.telas
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -40,6 +36,13 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
     val context = LocalContext.current
     val perfil: Perfil = ServicoDePerfil(context).obterPerfil()
 
+    LaunchedEffect(context) {
+        vm.perfil = ServicoDePerfil(context).obterPerfil()
+        if(vm.telaViagemRecuperada){
+            vm.obterViagem(perfil)
+        }
+        vm.atualizarTela(perfil)
+    }
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -122,8 +125,9 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
 
                 }
             }
-            Button(onClick = { vm.finalizarCorrida() }) {
-                Text(text = "Finalizar Corrida")
+            Button(onClick = { vm.finalizarViagem()
+            }) {
+                Text(text = "Finalizar Viagem")
             }
         }
 //        Column(

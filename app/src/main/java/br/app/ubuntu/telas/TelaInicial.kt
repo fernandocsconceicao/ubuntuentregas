@@ -39,7 +39,6 @@ fun TelaInicial(controladorDeNavegacao: NavHostController) {
     LaunchedEffect(context) {
         vm.perfil = perfil
         vm.atualizarTela(perfil, controladorDeNavegacao = controladorDeNavegacao)
-
     }
 
     Column(modifier = Modifier.fillMaxSize()) {

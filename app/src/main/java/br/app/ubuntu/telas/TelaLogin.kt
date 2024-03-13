@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import br.app.ubuntu.R
 import br.app.ubuntu.auxiliar.ServicoDePerfil
@@ -45,6 +46,7 @@ import br.app.ubuntu.dto.AuthorizationRequestBody
 import br.app.ubuntu.dto.AuthorizationResponseBody
 import br.app.ubuntu.enums.Rotas
 import br.app.ubuntu.enums.TipoConta
+import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
 import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 
@@ -58,6 +60,8 @@ fun TelaDeLogin(controlador: NavHostController) {
     var textoNotificacao by remember { mutableStateOf("") }
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val height = with(LocalDensity.current) { screenHeight * 0.8f }
+    val vm = viewModel<TelaInicialViewModel>()
+    vm.controlador=controlador
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -144,12 +148,18 @@ fun TelaDeLogin(controlador: NavHostController) {
                         if (resposta.isSuccessful) {
                             if (resposta.body()!!.accountType == TipoConta.ENTREGADOR.toString()) {
                                 val token = "Bearer " + resposta.body()!!.token
-                                println(resposta.body())
+
                                 ServicoDePerfil(context = context).definirTokenProd(
                                     token,
                                     resposta.body()!!.accountType,
                                     resposta.body()!!.idEntregador.toString()
                                 )
+                                val statusEntregador = resposta.body()!!.statusEntregador.toString()
+                                if(statusEntregador.equals( "EM_VIAGEM")){
+                                    controlador.navigate(Rotas.TELA_EM_CORRIDA.rota)
+                                    vm.telaViagemRecuperada = true
+                                    return@runBlocking
+                                }
                                 controlador.navigate(Rotas.TELA_INICIAL.rota)
                             } else {
 

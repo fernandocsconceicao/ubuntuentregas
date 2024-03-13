@@ -28,9 +28,13 @@ import retrofit2.Response
 
 object TelaInicialViewModel : ViewModel() {
 
+    var forcarMudancaStatus: Boolean? = null
+    var telaViagemRecuperada = false
     var bitmapLogoEstabelecimento: ImageBitmap? = null
     var imagemLogoEstabelecimento: ByteArray? = null
+    var nomeClienteFinal: String? = null
     var enderecoClienteFinal: String? = null
+    var nomeEstabelecimento: String? = null
     var enderecoEstabelecimento: String? = null
     val mensagemAguardeDeDeCorrida: String =
         "Aguardando corrida. Esteja em alerta, para receber uma notificação."
@@ -98,7 +102,8 @@ object TelaInicialViewModel : ViewModel() {
         Log.d("DES", " I -Atualizando tela")
         resposta =
             UbuntuClientImplementation.api.obterTelaMinhaArea(
-                perfil.token!!
+                perfil.token!!,
+                forcarMudancaStatus
             )
 
         status = resposta!!
@@ -173,7 +178,8 @@ object TelaInicialViewModel : ViewModel() {
         status = "Trabalhando"
     }
 
-    fun finalizarCorrida() {
+    fun finalizarViagem() {
+
         val mensagem = Mensagem(
             TipoMensagem.FINALIZAR_CORRIDA,
             perfil?.idEntregador!!,
@@ -189,8 +195,15 @@ object TelaInicialViewModel : ViewModel() {
         )
 
         val mensagemEmJson: String = Gson().toJson(mensagem)
+        if (telaViagemRecuperada){
+            runBlocking { UbuntuClientImplementation.api.finalizarViagem(perfil!!.token!!) }
+            forcarMudancaStatus= true
+            controlador?.navigate(Rotas.TELA_LOGIN.rota)
+
+        }else{
+            controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
+        }
         conexaoWebSocket?.send(mensagemEmJson)
-        controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
     }
 
     fun pingpong() {
@@ -211,5 +224,19 @@ object TelaInicialViewModel : ViewModel() {
         println("ping $mensagemEmJson")
         conexaoWebSocket?.send(mensagemEmJson)
 
+    }
+
+    fun obterViagem(perfil: Perfil) {
+        runBlocking {
+
+            val obterTelaViagem = UbuntuClientImplementation.api.obterTelaViagem(
+                perfil.token!!
+            ).body()
+
+            enderecoClienteFinal = obterTelaViagem!!.enderecoClienteFinal
+            nomeClienteFinal = obterTelaViagem!!.nomeClienteFinal
+            nomeEstabelecimento = obterTelaViagem!!.nomeEstabelecimento
+            enderecoEstabelecimento = obterTelaViagem.enderecoEstabelecimento
+        }
     }
 }
