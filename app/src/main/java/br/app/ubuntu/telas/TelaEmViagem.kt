@@ -135,7 +135,6 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
             }
             Button(onClick = {
                 confirmacao= true
-                println("confirmacao")
             }) {
                 Text(text = "Finalizar Viagem")
             }
@@ -144,7 +143,7 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
 
         if (confirmacao) {
             Snackbar(
-                modifier = Modifier.background(Color.Red), // Cor de fundo da Snackbar
+                modifier = Modifier.background(Color.Red).fillMaxWidth(), // Cor de fundo da Snackbar
                 action = {
 
                 }
@@ -165,6 +164,7 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
                     ) {
                         Text("Confirmar")
                     }
+                    
 
                 }
             }

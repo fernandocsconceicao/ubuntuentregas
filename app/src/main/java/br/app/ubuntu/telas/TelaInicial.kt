@@ -28,6 +28,7 @@ import br.app.ubuntu.R
 import br.app.ubuntu.auxiliar.Perfil
 import br.app.ubuntu.auxiliar.ServicoDePerfil
 import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
+import com.google.gson.Gson
 
 @SuppressLint("UnrememberedMutableState")
 @Composable

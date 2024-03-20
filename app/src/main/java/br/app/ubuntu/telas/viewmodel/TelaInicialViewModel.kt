@@ -16,6 +16,7 @@ import br.app.ubuntu.dto.Mensagem
 import br.app.ubuntu.dto.ResTelaMinhaArea
 import br.app.ubuntu.enums.Remetente
 import br.app.ubuntu.enums.Rotas
+import br.app.ubuntu.enums.StatusEntregador
 import br.app.ubuntu.enums.TipoMensagem
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -52,6 +53,26 @@ object TelaInicialViewModel : ViewModel() {
     var controlador: NavHostController? = null
 
 
+    suspend fun atualizarTela(perfil: Perfil, controladorDeNavegacao: NavHostController? = null) {
+        Log.d("DES", " I -Atualizando tela")
+        resposta =
+            UbuntuClientImplementation.api.obterTelaMinhaArea(
+                perfil.token!!,
+                forcarMudancaStatus
+            )
+        if(forcarMudancaStatus != null && forcarMudancaStatus == true){
+            forcarMudancaStatus = null
+        }
+        status = resposta!!
+            .body()!!
+            .status
+        nome = resposta!!.body()!!.nome
+        if (controladorDeNavegacao != null) {
+            controlador = controladorDeNavegacao
+        }
+        Log.d("DES", "F -Atualizando tela status = $status ")
+
+    }
     fun corridaOferecida(mensagem: Mensagem) {
         Log.d("DES", "Começo corridaOferecida" )
         idPedidoAcionado = mensagem.idPedidoAcionado
@@ -63,6 +84,7 @@ object TelaInicialViewModel : ViewModel() {
         Log.d("DES", "Começo corridaOferecida")
 
     }
+
     fun desconectado(){
         Log.d("DES", "Desconectado")
         notificarUsuario()
@@ -71,8 +93,35 @@ object TelaInicialViewModel : ViewModel() {
         }
     }
 
-    private fun notificarUsuario() {
+    fun finalizarViagem() {
 
+        val mensagem = Mensagem(
+            TipoMensagem.FINALIZAR_CORRIDA,
+            perfil?.idEntregador!!,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            Remetente.APP,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val mensagemEmJson: String = Gson().toJson(mensagem)
+        if (telaViagemRecuperada){
+            runBlocking { UbuntuClientImplementation.api.finalizarViagem(perfil!!.token!!) }
+            forcarMudancaStatus= true
+            controlador?.navigate(Rotas.TELA_LOGIN.rota)
+            telaViagemRecuperada =false
+
+        }else{
+            controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
+        }
+        conexaoWebSocket?.send(mensagemEmJson)
     }
 
     fun finalizarTrabalho() {
@@ -89,65 +138,17 @@ object TelaInicialViewModel : ViewModel() {
                     null,
                     Remetente.APP,
                     null,
+                    null,
+                    null,
                     null
                 )
             )
         )
+
         controlador?.navigate(Rotas.TELA_INICIAL.rota)
         runBlocking {
             atualizarTela(perfil!!, controlador)
         }
-    }
-
-    suspend fun atualizarTela(perfil: Perfil, controladorDeNavegacao: NavHostController? = null) {
-        Log.d("DES", " I -Atualizando tela")
-        resposta =
-            UbuntuClientImplementation.api.obterTelaMinhaArea(
-                perfil.token!!,
-                forcarMudancaStatus
-            )
-
-        status = resposta!!
-            .body()!!
-            .status
-        nome = resposta!!.body()!!.nome
-        if (controladorDeNavegacao != null) {
-            controlador = controladorDeNavegacao
-        }
-        Log.d("DES", "F -Atualizando tela status = $status ")
-
-    }
-
-    fun responderCorrida(corridaAceita: Boolean, perfil: Perfil) {
-        Log.d("DES", " I -ResponderCorrida $corridaAceita")
-
-        conexaoWebSocket?.send(
-            Gson().toJson(
-                Mensagem(
-                    TipoMensagem.RESPOSTA_CORRIDA,
-                    perfil.idEntregador!!,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    Remetente.APP,
-                    corridaAceita,
-                    idPedidoAcionado
-                )
-            )
-        )
-        if (corridaAceita) {
-            CoroutineScope(Dispatchers.Main).launch {
-                controlador?.navigate(Rotas.TELA_EM_CORRIDA.rota)
-            }
-        } else {
-            CoroutineScope(Dispatchers.Main).launch {
-                controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
-            }
-        }
-        Log.d("DES", " F -ResponderCorrida $corridaAceita")
     }
 
     fun iniciarTrabalho(controladorDeNavegacao: NavHostController) {
@@ -167,9 +168,11 @@ object TelaInicialViewModel : ViewModel() {
             null,
             Remetente.APP,
             null,
+            null,
+            null,
             null
         )
-        pingpong()
+        pingpong(mensagem.statusEntregador, mensagem.textoStatus)
         val mensagemEmJson: String = Gson().toJson(mensagem)
 
         conexaoWebSocket?.send(
@@ -179,51 +182,7 @@ object TelaInicialViewModel : ViewModel() {
         status = "Trabalhando"
     }
 
-    fun finalizarViagem() {
-
-        val mensagem = Mensagem(
-            TipoMensagem.FINALIZAR_CORRIDA,
-            perfil?.idEntregador!!,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            Remetente.APP,
-            null,
-            null
-        )
-
-        val mensagemEmJson: String = Gson().toJson(mensagem)
-        if (telaViagemRecuperada){
-            runBlocking { UbuntuClientImplementation.api.finalizarViagem(perfil!!.token!!) }
-            forcarMudancaStatus= true
-            controlador?.navigate(Rotas.TELA_LOGIN.rota)
-
-        }else{
-            controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
-        }
-        conexaoWebSocket?.send(mensagemEmJson)
-    }
-
-    fun pingpong() {
-        val mensagem = Mensagem(
-            TipoMensagem.PINGPONG,
-            perfil?.idEntregador.toString(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            Remetente.APP,
-            null,
-            null
-        )
-        val mensagemEmJson: String = Gson().toJson(mensagem)
-        println("ping $mensagemEmJson")
-        conexaoWebSocket?.send(mensagemEmJson)
+    private fun notificarUsuario() {
 
     }
 
@@ -240,8 +199,78 @@ object TelaInicialViewModel : ViewModel() {
             enderecoEstabelecimento = obterTelaViagem.enderecoEstabelecimento
         }
     }
-    fun confirmacaoEncerramentoDaViagem(){
-        confirmacaoFinalizacaoCorrida = true
-        println(confirmacaoFinalizacaoCorrida)
+
+    @SuppressLint("SuspiciousIndentation")
+    fun pingpong(statusEntregador: StatusEntregador?, textoStatus: String?) {
+        val mensagem = Mensagem(
+            TipoMensagem.PINGPONG,
+            perfil?.idEntregador.toString(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            Remetente.APP,
+            null,
+            null,
+            null,
+            null,
+
+        )
+        println(statusEntregador)
+        println(textoStatus)
+       textoStatus.let {
+           if(textoStatus != null){
+                status = textoStatus
+               Log.d("VM", "status atualizado para $textoStatus")
+           }
+       }
+
+        val mensagemEmJson: String = Gson().toJson(mensagem)
+        println("ping $mensagemEmJson")
+        when(mensagem.statusEntregador){
+            StatusEntregador.EM_VIAGEM -> controlador!!.navigate(Rotas.TELA_EM_CORRIDA.rota)
+            StatusEntregador.TRABALHANDO -> controlador!!.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
+            StatusEntregador.AVALIANDO -> controlador!!.navigate(Rotas.TELA_ACIONAMENTO_PARA_CORRIDA.rota)
+            else -> {}
+        }
+        conexaoWebSocket?.send(mensagemEmJson)
+
     }
+
+    fun responderCorrida(corridaAceita: Boolean, perfil: Perfil) {
+        Log.d("DES", " I - ResponderCorrida $corridaAceita")
+
+        conexaoWebSocket?.send(
+            Gson().toJson(
+                Mensagem(
+                    TipoMensagem.RESPOSTA_CORRIDA,
+                    perfil.idEntregador!!,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    Remetente.APP,
+                    corridaAceita,
+                    idPedidoAcionado,
+                    null,
+                    null
+                )
+            )
+        )
+        if (corridaAceita) {
+            CoroutineScope(Dispatchers.Main).launch {
+                controlador?.navigate(Rotas.TELA_EM_CORRIDA.rota)
+            }
+        } else {
+            CoroutineScope(Dispatchers.Main).launch {
+                controlador?.navigate(Rotas.TELA_AGUARDE_DE_CORRIDA.rota)
+            }
+        }
+        Log.d("DES", " F -ResponderCorrida $corridaAceita")
+    }
+
 }

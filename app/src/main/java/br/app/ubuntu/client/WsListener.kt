@@ -26,7 +26,6 @@ class WsListener : WebSocketListener() {
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         super.onFailure(webSocket, t, response)
         println("falhou : $t | ${response?.code}")
-
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
@@ -45,7 +44,7 @@ class WsListener : WebSocketListener() {
             }else if (mensagem.tipoMensagem == TipoMensagem.DESCONEXAO) {
                 viewModel.desconectado()
             }else if (mensagem.tipoMensagem == TipoMensagem.PINGPONG) {
-                viewModel.pingpong()
+                viewModel.pingpong(mensagem.statusEntregador,mensagem.textoStatus)
             }
 
         } catch (e: Exception) {

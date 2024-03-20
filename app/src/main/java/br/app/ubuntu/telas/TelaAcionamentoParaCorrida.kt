@@ -33,6 +33,7 @@ import br.app.ubuntu.enums.Remetente
 import br.app.ubuntu.enums.TipoMensagem
 import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.WebSocket
 
@@ -101,15 +102,17 @@ fun TelaAcionamentoParaCorrida(controladorDeNavegacao: NavHostController) {
                 Button(onClick = {
                    runBlocking {
                        vm.responderCorrida(false,perfil)
-                       vm.atualizarTela(perfil)
+                       delay(1000)
                    }
 
                 }) {
                     Text(text = "Rejeitar")
                 }
+
                 Button(onClick = {
                    runBlocking {
                        vm.responderCorrida(true,perfil)
+                       delay(1000)
                    }
                 }) {
                     Text(text = "Aceitar")

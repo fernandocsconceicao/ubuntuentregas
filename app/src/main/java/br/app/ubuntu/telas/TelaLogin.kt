@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +48,7 @@ import br.app.ubuntu.dto.AuthorizationResponseBody
 import br.app.ubuntu.enums.Rotas
 import br.app.ubuntu.enums.TipoConta
 import br.app.ubuntu.telas.viewmodel.TelaInicialViewModel
+import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 
@@ -154,12 +156,14 @@ fun TelaDeLogin(controlador: NavHostController) {
                                     resposta.body()!!.accountType,
                                     resposta.body()!!.idEntregador.toString()
                                 )
-                                val statusEntregador = resposta.body()!!.statusEntregador.toString()
-                                if(statusEntregador.equals( "EM_VIAGEM")){
-                                    controlador.navigate(Rotas.TELA_EM_CORRIDA.rota)
-                                    vm.telaViagemRecuperada = true
-                                    return@runBlocking
-                                }
+                                println(Gson().toJson(resposta.body()))
+
+//                                val statusEntregador = resposta.body()!!.statusEntregador.toString()
+//                                if(statusEntregador.equals( "EM_VIAGEM")){
+//                                    controlador.navigate(Rotas.TELA_EM_CORRIDA.rota)
+//                                    vm.telaViagemRecuperada = true
+//                                    return@runBlocking
+//                                }
                                 controlador.navigate(Rotas.TELA_INICIAL.rota)
                             } else {
 
