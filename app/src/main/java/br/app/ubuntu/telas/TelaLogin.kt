@@ -55,15 +55,15 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaDeLogin(controlador: NavHostController) {
-    var email by remember { mutableStateOf("entregador@entregador.com") }
-    var senha by remember { mutableStateOf("hellotester") }
+    var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
     val context = LocalContext.current
     var notificacao by remember { mutableStateOf(false) }
     var textoNotificacao by remember { mutableStateOf("") }
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val height = with(LocalDensity.current) { screenHeight * 0.8f }
     val vm = viewModel<TelaInicialViewModel>()
-    vm.controlador=controlador
+    vm.controlador = controlador
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -156,15 +156,31 @@ fun TelaDeLogin(controlador: NavHostController) {
                                     resposta.body()!!.accountType,
                                     resposta.body()!!.idEntregador.toString()
                                 )
-                                println(Gson().toJson(resposta.body()))
 
+                                controlador.navigate(Rotas.TELA_INICIAL.rota)
 //                                val statusEntregador = resposta.body()!!.statusEntregador.toString()
 //                                if(statusEntregador.equals( "EM_VIAGEM")){
 //                                    controlador.navigate(Rotas.TELA_EM_CORRIDA.rota)
 //                                    vm.telaViagemRecuperada = true
 //                                    return@runBlocking
 //                                }
-                                controlador.navigate(Rotas.TELA_INICIAL.rota)
+                                if (resposta.body()!!.primeiroAcesso == true) {
+                                    val token = "Bearer " + resposta.body()!!.token
+
+                                    ServicoDePerfil(context = context).definirTokenProd(
+                                        token,
+                                        resposta.body()!!.accountType,
+                                        resposta.body()!!.idEntregador.toString()
+                                    )
+
+                                    controlador.navigate(Rotas.TELA_CONFIRMACAO_DE_EMAIL.rota)
+//                                val statusEntregador = resposta.body()!!.statusEntregador.toString()
+//                                if(statusEntregador.equals( "EM_VIAGEM")){
+//                                    controlador.navigate(Rotas.TELA_EM_CORRIDA.rota)
+//                                    vm.telaViagemRecuperada = true
+//                                    return@runBlocking
+//                                }
+                                }
                             } else {
 
                                 notificacao = true;

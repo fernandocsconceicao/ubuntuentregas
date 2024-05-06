@@ -1,7 +1,6 @@
 package br.app.ubuntu
 
 import android.annotation.SuppressLint
-import android.app.ActionBar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +32,7 @@ class MainActivity : ComponentActivity() {
                 composable(Rotas.TELA_AGUARDE_DE_CORRIDA.rota) { TelaAguardeDeCorrida(controladorDeNavegacao) }
                 composable(Rotas.TELA_ACIONAMENTO_PARA_CORRIDA.rota) { TelaAcionamentoParaCorrida(controladorDeNavegacao) }
                 composable(Rotas.TELA_EM_CORRIDA.rota) { TelaEmCorrida(controladorDeNavegacao) }
+                composable(Rotas.TELA_CONFIRMACAO_DE_EMAIL.rota) { TelaInicial(controladorDeNavegacao) }
 
             }
         }

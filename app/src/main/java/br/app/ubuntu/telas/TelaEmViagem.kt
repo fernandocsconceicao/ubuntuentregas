@@ -123,7 +123,7 @@ fun TelaEmCorrida(controladorDeNavegacao: NavHostController) {
                                 getSystemService(context, ClipboardManager::class.java)
 
                             val clip2 =
-                                ClipData.newPlainText("QR Code", vm.enderecoClienteFinal)
+                                ClipData.newPlainText("", vm.enderecoClienteFinal)
 
                             clipboard?.setPrimaryClip(clip2)
                         }) {

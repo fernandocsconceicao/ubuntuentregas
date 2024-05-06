@@ -11,7 +11,7 @@ object MyWebSocketClient {
         val client = OkHttpClient()
         val request: Request = Request.Builder()
 //            .url("ws://10.0.2.2:7200/entregas")
-            .url("ws://89.117.32.29:7200/entregas")
+            .url("wss://ubuntu.app.br:7200/entregas")
 //            .url("ws://10.0.2.2:7200/entregas")
             .header("Authorization",perfil?.token!!)
             .build()
